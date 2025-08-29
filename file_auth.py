@@ -5,13 +5,21 @@ from googleapiclient.http import MediaIoBaseDownload
 from google.oauth2 import service_account
 import io
 import os
-import os
 from dotenv import load_dotenv
+from google.oauth2 import service_account
+import json
 
 load_dotenv()
 
-SERVICE_ACCOUNT_FILE = os.getenv("GOOGLE_SERVICE_ACCOUNT_FILE")
-SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
+
+# Load the environment variable and parse as a dict
+service_account_info = json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"])
+
+credentials = service_account.Credentials.from_service_account_info(
+    service_account_info,
+    scopes=["https://www.googleapis.com/auth/drive.readonly"],
+)
+
 FOLDER_ID = os.getenv("GOOGLE_DRIVE_FOLDER_ID")
 
 credentials = service_account.Credentials.from_service_account_file(
@@ -35,3 +43,4 @@ def download_pdf(file_id, dest_path):
     while not done:
         status, done = downloader.next_chunk()
     fh.close()
+
